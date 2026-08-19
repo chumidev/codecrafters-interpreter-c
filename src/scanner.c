@@ -26,6 +26,14 @@ bool scan_contents(char *contents, TokenArray *out) {
             add_token(out, (Token){TOKEN_RIGHT_PAREN, ")", .literal = NULL, .line = line});
             break;
 
+        case '{':
+            add_token(out, (Token){TOKEN_LEFT_BRACE, "{", .literal = NULL, .line = line});
+            break;
+
+        case '}':
+            add_token(out, (Token){TOKEN_RIGHT_BRACE, "}", .literal = NULL, .line = line});
+            break;
+
         default:
             fprintf(stderr, "Character not supported: '%c'\n", c);
             return false;

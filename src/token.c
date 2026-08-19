@@ -35,6 +35,12 @@ const char *tokentype_to_str(TokenType type) {
     case TOKEN_RIGHT_PAREN:
         return "RIGHT_PAREN";
         break;
+    case TOKEN_RIGHT_BRACE:
+        return "RIGHT_BRACE";
+        break;
+    case TOKEN_LEFT_BRACE:
+        return "LEFT_BRACE";
+        break;
     }
 }
 
