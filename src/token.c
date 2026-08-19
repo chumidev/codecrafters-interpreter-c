@@ -26,21 +26,19 @@ bool add_token(TokenArray *array, Token token) {
 
 const char *tokentype_to_str(TokenType type) {
     switch (type) {
-    case TOKEN_EOF:
-        return "EOF";
-        break;
-    case TOKEN_LEFT_PAREN:
-        return "LEFT_PAREN";
-        break;
-    case TOKEN_RIGHT_PAREN:
-        return "RIGHT_PAREN";
-        break;
-    case TOKEN_RIGHT_BRACE:
-        return "RIGHT_BRACE";
-        break;
-    case TOKEN_LEFT_BRACE:
-        return "LEFT_BRACE";
-        break;
+    case TOKEN_EOF:         return "EOF";
+
+    case TOKEN_LEFT_PAREN:  return "LEFT_PAREN";
+    case TOKEN_RIGHT_PAREN: return "RIGHT_PAREN";
+    case TOKEN_RIGHT_BRACE: return "RIGHT_BRACE";
+    case TOKEN_LEFT_BRACE:  return "LEFT_BRACE";
+
+    case TOKEN_COMMA:       return "COMMA";
+    case TOKEN_DOT:         return "DOT";
+    case TOKEN_MINUS:       return "MINUS";
+    case TOKEN_PLUS:        return "PLUS";
+    case TOKEN_SEMICOLON:   return "SEMICOLON";
+    case TOKEN_STAR:        return "STAR";
     }
 }
 

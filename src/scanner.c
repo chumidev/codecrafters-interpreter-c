@@ -34,6 +34,30 @@ bool scan_contents(char *contents, TokenArray *out) {
             add_token(out, (Token){TOKEN_RIGHT_BRACE, "}", .literal = NULL, .line = line});
             break;
 
+        case ',':
+            add_token(out, (Token){TOKEN_COMMA, ",", .literal = NULL, .line = line});
+            break;
+
+        case '.':
+            add_token(out, (Token){TOKEN_DOT, ".", .literal = NULL, .line = line});
+            break;
+
+        case '-':
+            add_token(out, (Token){TOKEN_MINUS, "-", .literal = NULL, .line = line});
+            break;
+
+        case '+':
+            add_token(out, (Token){TOKEN_PLUS, "+", .literal = NULL, .line = line});
+            break;
+
+        case ';':
+            add_token(out, (Token){TOKEN_SEMICOLON, ";", .literal = NULL, .line = line});
+            break;
+
+        case '*':
+            add_token(out, (Token){TOKEN_STAR, "*", .literal = NULL, .line = line});
+            break;
+
         default:
             fprintf(stderr, "Character not supported: '%c'\n", c);
             return false;
