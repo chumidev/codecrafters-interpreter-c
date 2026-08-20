@@ -1,4 +1,5 @@
 #include "token.h"
+#include "errors.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -9,19 +10,19 @@ void free_array(TokenArray *array) {
     array->count = 0;
 }
 
-bool add_token(TokenArray *array, Token token) {
+Errors add_token(TokenArray *array, Token token) {
     if (array->count + 1 > array->capacity) {
         int capacity = array->capacity == 0 ? 256 : array->capacity * 2;
         Token *tmp = realloc(array->tokens, sizeof(*array->tokens) * capacity);
         if (!tmp) {
             fprintf(stderr, "Memory allocation failed\n");
-            return false;
+            return ERROR_MALLOC;
         }
         array->tokens = tmp;
         array->capacity = capacity;
     }
     array->tokens[array->count++] = token;
-    return true;
+    return SUCCESS;
 }
 
 const char *tokentype_to_str(TokenType type) {

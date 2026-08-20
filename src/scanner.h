@@ -2,6 +2,7 @@
 
 #include <stdbool.h>
 
+#include "errors.h"
 #include "token.h"
 
-bool scan_contents(char *contents, TokenArray *out);
+Errors scan_contents(char *contents, TokenArray *out);

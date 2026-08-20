@@ -1,10 +1,10 @@
 #include "scanner.h"
 #include "token.h"
 
-#include <stddef.h>
 #include <stdio.h>
 
-bool scan_contents(char *contents, TokenArray *out) {
+Errors scan_contents(char *contents, TokenArray *out) {
+    Errors return_code = SUCCESS;
     int line = 0;
     char c;
     while ((c = *contents++) != '\0') {
@@ -59,10 +59,11 @@ bool scan_contents(char *contents, TokenArray *out) {
             break;
 
         default:
-            fprintf(stderr, "Character not supported: '%c'\n", c);
-            return false;
+            fprintf(stderr, "[line %d] Error: Unexpected character: %c\n", line + 1, c);
+            return_code = ERROR_LEXICAL;
+            break;
         }
     }
     add_token(out, (Token){TOKEN_EOF, "", .literal = NULL, .line = line});
-    return true;
+    return return_code;
 }

@@ -1,6 +1,6 @@
 #pragma once
 
-#include <stdbool.h>
+#include "errors.h"
 
 typedef enum {
     TOKEN_EOF,
@@ -36,7 +36,7 @@ typedef struct {
 } TokenArray;
 
 void free_array(TokenArray *array);
-bool add_token(TokenArray *array, Token token);
+Errors add_token(TokenArray *array, Token token);
 void print_token_array(TokenArray *array);
 
 void print_token(Token *token);
