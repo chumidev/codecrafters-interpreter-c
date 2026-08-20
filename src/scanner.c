@@ -14,6 +14,7 @@ ErrorCodes scan_contents(char *contents, TokenArray *out) {
         switch (c) {
 
         case ' ':
+        case '\t':
         case '\r':
             break;
 
