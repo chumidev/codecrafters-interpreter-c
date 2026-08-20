@@ -17,6 +17,8 @@ typedef enum {
     TOKEN_SEMICOLON,
     TOKEN_STAR,
 
+    TOKEN_EQUAL,
+    TOKEN_EQUAL_EQUAL,
 } TokenType;
 
 typedef struct {
@@ -36,7 +38,7 @@ typedef struct {
 } TokenArray;
 
 void free_array(TokenArray *array);
-Errors add_token(TokenArray *array, Token token);
+ErrorCodes add_token(TokenArray *array, Token token);
 void print_token_array(TokenArray *array);
 
 void print_token(Token *token);

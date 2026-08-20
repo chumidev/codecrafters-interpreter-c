@@ -5,12 +5,16 @@
 #include <stdlib.h>
 
 void free_array(TokenArray *array) {
+    if (!array) return;
+
     free(array->tokens);
     array->capacity = 0;
     array->count = 0;
 }
 
-Errors add_token(TokenArray *array, Token token) {
+ErrorCodes add_token(TokenArray *array, Token token) {
+    if (!array) return ERROR_INVALID_INPUT;
+
     if (array->count + 1 > array->capacity) {
         int capacity = array->capacity == 0 ? 256 : array->capacity * 2;
         Token *tmp = realloc(array->tokens, sizeof(*array->tokens) * capacity);
@@ -40,6 +44,9 @@ const char *tokentype_to_str(TokenType type) {
     case TOKEN_PLUS:        return "PLUS";
     case TOKEN_SEMICOLON:   return "SEMICOLON";
     case TOKEN_STAR:        return "STAR";
+
+    case TOKEN_EQUAL:       return "EQUAL";
+    case TOKEN_EQUAL_EQUAL: return "EQUAL_EQUAL";
     }
 }
 

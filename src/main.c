@@ -23,7 +23,7 @@ int main(int argc, char *argv[]) {
         char *file_contents = read_file_contents(argv[2]);
 
         TokenArray tokens = {0};
-        Errors error = scan_contents(file_contents, &tokens);
+        ErrorCodes error = scan_contents(file_contents, &tokens);
         print_token_array(&tokens);
 
         free_array(&tokens);

@@ -5,4 +5,4 @@
 #include "errors.h"
 #include "token.h"
 
-Errors scan_contents(char *contents, TokenArray *out);
+ErrorCodes scan_contents(char *contents, TokenArray *out);
