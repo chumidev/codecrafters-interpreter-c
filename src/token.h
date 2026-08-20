@@ -19,6 +19,8 @@ typedef enum {
 
     TOKEN_EQUAL,
     TOKEN_EQUAL_EQUAL,
+    TOKEN_BANG,
+    TOKEN_BANG_EQUAL,
 } TokenType;
 
 typedef struct {
