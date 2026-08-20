@@ -30,6 +30,7 @@ typedef enum {
     TOKEN_SLASH,
 
     TOKEN_STRING,
+    TOKEN_NUMBER,
 } TokenType;
 
 typedef struct {
@@ -37,7 +38,7 @@ typedef struct {
     const char *lexeme;
     union {
         const char *literal;
-        int literal_num;
+        double literal_num;
     };
     unsigned int line;
 } Token;

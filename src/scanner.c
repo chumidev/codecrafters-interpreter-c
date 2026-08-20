@@ -2,6 +2,7 @@
 #include "errors.h"
 #include "token.h"
 
+#include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -110,7 +111,7 @@ ErrorCodes scan_contents(char *contents, TokenArray *out) {
             } else add_token(out, (Token){TOKEN_SLASH, "/", .literal = NULL, .line = line});
             break;
 
-        case '"':
+        case '"': {
             char *start = contents - 1; // reset to starting '"' char
             int len = 1;
 
@@ -134,6 +135,55 @@ ErrorCodes scan_contents(char *contents, TokenArray *out) {
 
             add_token(out, (Token){TOKEN_STRING, lexeme, .literal = literal, .line = line});
             break;
+        }
+
+        case '0':
+        case '1':
+        case '2':
+        case '3':
+        case '4':
+        case '5':
+        case '6':
+        case '7':
+        case '8':
+        case '9': {
+            char *start = contents - 1;
+            int len = 1;
+            double number;
+
+            // TODO: Add checks for number length. Big string numbers cannot be converted into real number without using big floats
+
+            // Whole part
+            while (isdigit(*contents)) {
+                len++;
+                contents++;
+            }
+
+            if (*contents == '.') {
+                len++;
+                contents++;
+
+                if (!isdigit(*contents)) {
+                    fprintf(stderr, "[line %d] Error: Wrong number formatting\n", line);
+                    return_code = ERROR_LEXICAL;
+                } else {
+                    // Decimal part
+                    while (isdigit(*contents)) {
+                        len++;
+                        contents++;
+                    }
+                }
+            }
+
+            char *lexeme = get_substring(start, len);
+            if (sscanf(lexeme, "%lf", &number) != 1) {
+                fprintf(stderr, "[line %d] Error: Wrong number formatting\n", line);
+                return_code = ERROR_LEXICAL;
+            }
+
+            add_token(out, (Token){TOKEN_NUMBER, lexeme, .literal_num = number, .line = line});
+            break;
+        }
 
         default:
             fprintf(stderr, "[line %d] Error: Unexpected character: %c\n", line, c);

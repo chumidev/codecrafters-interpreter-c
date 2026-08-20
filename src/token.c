@@ -3,12 +3,14 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 void free_token(Token *token) {
     if (!token) return;
 
-    // TODO: Add check for future token types that might need it
-    if (token->type == TOKEN_STRING) {
+    if (token->type == TOKEN_NUMBER) {
+        free((void *)token->lexeme);
+    } else if (token->type == TOKEN_STRING) {
         free((void *)token->lexeme);
         free((void *)token->literal);
     }
@@ -71,13 +73,24 @@ const char *tokentype_to_str(TokenType type) {
 
     case TOKEN_SLASH:  return "SLASH";
     case TOKEN_STRING: return "STRING";
+    case TOKEN_NUMBER: return "NUMBER";
     }
 }
 
 void print_token(Token *token) {
     if (!token) return;
-    // TODO: Add check for number token type later on so to print %d token->literal_num
-    printf("%s %s %s\n", tokentype_to_str(token->type), token->lexeme, !token->literal ? "null" : token->literal);
+
+    if (token->type == TOKEN_NUMBER) {
+        // append .0 to the num literal string if it has no decimal part
+        char num_literal_str[64];
+        snprintf(num_literal_str, sizeof(num_literal_str), "%.11g", token->literal_num);
+        if (!strchr(num_literal_str, '.') && !strchr(num_literal_str, 'e')) {
+            strcat(num_literal_str, ".0");
+        }
+        printf("%s %s %s\n", tokentype_to_str(token->type), token->lexeme, num_literal_str);
+
+    } else
+        printf("%s %s %s\n", tokentype_to_str(token->type), token->lexeme, !token->literal ? "null" : token->literal);
 }
 
 void print_token_array(TokenArray *array) {
