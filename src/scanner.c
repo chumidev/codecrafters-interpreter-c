@@ -3,12 +3,24 @@
 #include "token.h"
 
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+static char *get_substring(const char *start, size_t length) {
+    char *substring = malloc(length + 1);
+    if (!substring) return NULL;
+
+    memcpy(substring, start, length);
+    substring[length] = '\0';
+
+    return substring;
+}
 
 ErrorCodes scan_contents(char *contents, TokenArray *out) {
     if (!contents || !out) return ERROR_INVALID_INPUT;
 
     char c;
-    int line = 0;
+    int line = 1;
     ErrorCodes return_code = SUCCESS;
     while ((c = *contents++) != '\0') {
         switch (c) {
@@ -98,8 +110,33 @@ ErrorCodes scan_contents(char *contents, TokenArray *out) {
             } else add_token(out, (Token){TOKEN_SLASH, "/", .literal = NULL, .line = line});
             break;
 
+        case '"':
+            char *start = contents - 1; // reset to starting '"' char
+            int len = 1;
+
+            while (*contents != '"' && *contents != '\0') {
+                if (*contents == '\n') line++;
+                len++;
+                contents++;
+            }
+            if (*contents == '\0') {
+                fprintf(stderr, "[line %d] Error: Unterminated string.\n", line);
+                return_code = ERROR_LEXICAL;
+                break;
+            }
+
+            // include the closing quote in total lexeme length
+            len++;
+            contents++;
+
+            char *lexeme = get_substring(start, len);
+            char *literal = get_substring(start + 1, len - 2);
+
+            add_token(out, (Token){TOKEN_STRING, lexeme, .literal = literal, .line = line});
+            break;
+
         default:
-            fprintf(stderr, "[line %d] Error: Unexpected character: %c\n", line + 1, c);
+            fprintf(stderr, "[line %d] Error: Unexpected character: %c\n", line, c);
             return_code = ERROR_LEXICAL;
             break;
         }

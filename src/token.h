@@ -28,6 +28,8 @@ typedef enum {
     TOKEN_GREATER_EQUAL,
 
     TOKEN_SLASH,
+
+    TOKEN_STRING,
 } TokenType;
 
 typedef struct {
@@ -46,9 +48,10 @@ typedef struct {
     int capacity;
 } TokenArray;
 
-void free_array(TokenArray *array);
+void free_token_array(TokenArray *array);
 ErrorCodes add_token(TokenArray *array, Token token);
 void print_token_array(TokenArray *array);
 
+void free_token(Token *token);
 void print_token(Token *token);
 const char *tokentype_to_str(TokenType type);

@@ -26,7 +26,7 @@ int main(int argc, char *argv[]) {
         ErrorCodes error = scan_contents(file_contents, &tokens);
         print_token_array(&tokens);
 
-        free_array(&tokens);
+        free_token_array(&tokens);
         free(file_contents);
 
         if (error) return error;

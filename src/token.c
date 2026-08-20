@@ -4,10 +4,23 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-void free_array(TokenArray *array) {
+void free_token(Token *token) {
+    if (!token) return;
+
+    // TODO: Add check for future token types that might need it
+    if (token->type == TOKEN_STRING) {
+        free((void *)token->lexeme);
+        free((void *)token->literal);
+    }
+}
+
+void free_token_array(TokenArray *array) {
     if (!array) return;
 
+    for (int i = 0; i < array->count; i++) free_token(&array->tokens[i]);
+
     free(array->tokens);
+    array->tokens = NULL;
     array->capacity = 0;
     array->count = 0;
 }
@@ -56,13 +69,14 @@ const char *tokentype_to_str(TokenType type) {
     case TOKEN_GREATER_EQUAL:
         return "GREATER_EQUAL";
 
-    case TOKEN_SLASH: return "SLASH";
+    case TOKEN_SLASH:  return "SLASH";
+    case TOKEN_STRING: return "STRING";
     }
 }
 
 void print_token(Token *token) {
     if (!token) return;
-    // Add check for number token type later on so to print %d token->literal_num
+    // TODO: Add check for number token type later on so to print %d token->literal_num
     printf("%s %s %s\n", tokentype_to_str(token->type), token->lexeme, !token->literal ? "null" : token->literal);
 }
 
