@@ -26,6 +26,8 @@ typedef enum {
     TOKEN_LESS_EQUAL,
     TOKEN_GREATER,
     TOKEN_GREATER_EQUAL,
+
+    TOKEN_SLASH,
 } TokenType;
 
 typedef struct {

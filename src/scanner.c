@@ -89,6 +89,14 @@ ErrorCodes scan_contents(char *contents, TokenArray *out) {
             } else add_token(out, (Token){TOKEN_GREATER, ">", .literal = NULL, .line = line});
             break;
 
+        case '/':
+            if (*contents == '/') {
+                contents++;
+                while (*contents != '\n' && *contents != '\0') contents++;
+
+            } else add_token(out, (Token){TOKEN_SLASH, "/", .literal = NULL, .line = line});
+            break;
+
         default:
             fprintf(stderr, "[line %d] Error: Unexpected character: %c\n", line + 1, c);
             return_code = ERROR_LEXICAL;

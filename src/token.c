@@ -55,7 +55,8 @@ const char *tokentype_to_str(TokenType type) {
     case TOKEN_GREATER:     return "GREATER";
     case TOKEN_GREATER_EQUAL:
         return "GREATER_EQUAL";
-        break;
+
+    case TOKEN_SLASH: return "SLASH";
     }
 }
 
