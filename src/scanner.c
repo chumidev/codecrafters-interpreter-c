@@ -75,6 +75,20 @@ ErrorCodes scan_contents(char *contents, TokenArray *out) {
             } else add_token(out, (Token){TOKEN_BANG, "!", .literal = NULL, .line = line});
             break;
 
+        case '<':
+            if (*contents == '=') {
+                add_token(out, (Token){TOKEN_LESS_EQUAL, "<=", .literal = NULL, .line = line});
+                contents++;
+            } else add_token(out, (Token){TOKEN_LESS, "<", .literal = NULL, .line = line});
+            break;
+
+        case '>':
+            if (*contents == '=') {
+                add_token(out, (Token){TOKEN_GREATER_EQUAL, ">=", .literal = NULL, .line = line});
+                contents++;
+            } else add_token(out, (Token){TOKEN_GREATER, ">", .literal = NULL, .line = line});
+            break;
+
         default:
             fprintf(stderr, "[line %d] Error: Unexpected character: %c\n", line + 1, c);
             return_code = ERROR_LEXICAL;

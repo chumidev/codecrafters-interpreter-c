@@ -21,6 +21,11 @@ typedef enum {
     TOKEN_EQUAL_EQUAL,
     TOKEN_BANG,
     TOKEN_BANG_EQUAL,
+
+    TOKEN_LESS,
+    TOKEN_LESS_EQUAL,
+    TOKEN_GREATER,
+    TOKEN_GREATER_EQUAL,
 } TokenType;
 
 typedef struct {

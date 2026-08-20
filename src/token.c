@@ -49,6 +49,13 @@ const char *tokentype_to_str(TokenType type) {
     case TOKEN_EQUAL_EQUAL: return "EQUAL_EQUAL";
     case TOKEN_BANG:        return "BANG";
     case TOKEN_BANG_EQUAL:  return "BANG_EQUAL";
+
+    case TOKEN_LESS:        return "LESS";
+    case TOKEN_LESS_EQUAL:  return "LESS_EQUAL";
+    case TOKEN_GREATER:     return "GREATER";
+    case TOKEN_GREATER_EQUAL:
+        return "GREATER_EQUAL";
+        break;
     }
 }
 
