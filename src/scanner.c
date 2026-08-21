@@ -149,7 +149,6 @@ ErrorCodes scan_contents(char *contents, TokenArray *out) {
         case '9': {
             char *start = contents - 1;
             int len = 1;
-            double number;
 
             // TODO: Add checks for number length. Big string numbers cannot be converted into real number without using big floats
 
@@ -176,7 +175,9 @@ ErrorCodes scan_contents(char *contents, TokenArray *out) {
             }
 
             char *lexeme = get_substring(start, len);
-            if (sscanf(lexeme, "%lf", &number) != 1) {
+            char *endptr;
+            double number = strtod(lexeme, &endptr);
+            if (endptr == lexeme) {
                 fprintf(stderr, "[line %d] Error: Wrong number formatting\n", line);
                 return_code = ERROR_LEXICAL;
             }

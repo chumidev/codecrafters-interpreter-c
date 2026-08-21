@@ -81,12 +81,21 @@ void print_token(Token *token) {
     if (!token) return;
 
     if (token->type == TOKEN_NUMBER) {
-        // append .0 to the num literal string if it has no decimal part
         char num_literal_str[64];
-        snprintf(num_literal_str, sizeof(num_literal_str), "%.11g", token->literal_num);
-        if (!strchr(num_literal_str, '.') && !strchr(num_literal_str, 'e')) {
-            strcat(num_literal_str, ".0");
-        }
+        snprintf(num_literal_str, sizeof(num_literal_str), "%s", token->lexeme);
+
+        if (strchr(num_literal_str, '.')) {
+            size_t len = strlen(num_literal_str);
+
+            // strip away repeated zeroes leaving one left
+            while (num_literal_str[len - 1] == '0') {
+                if (len >= 3 && num_literal_str[len - 2] == '.') {
+                    break;
+                }
+                num_literal_str[--len] = '\0';
+            }
+        } else strcat(num_literal_str, ".0");
+
         printf("%s %s %s\n", tokentype_to_str(token->type), token->lexeme, num_literal_str);
 
     } else
