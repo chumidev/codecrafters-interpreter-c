@@ -7,12 +7,35 @@
 
 void free_token(Token *token) {
     if (!token) return;
-
-    if (token->type == TOKEN_NUMBER || token->type == TOKEN_IDENTIFIER) {
-        free((void *)token->lexeme);
-    } else if (token->type == TOKEN_STRING) {
+    switch (token->type) {
+    case TOKEN_STRING:
         free((void *)token->lexeme);
         free((void *)token->literal);
+        break;
+
+    case TOKEN_NUMBER:
+    case TOKEN_IDENTIFIER:
+    case TOKEN_AND:
+    case TOKEN_CLASS:
+    case TOKEN_ELSE:
+    case TOKEN_FALSE:
+    case TOKEN_FOR:
+    case TOKEN_FUN:
+    case TOKEN_IF:
+    case TOKEN_NIL:
+    case TOKEN_OR:
+    case TOKEN_PRINT:
+    case TOKEN_RETURN:
+    case TOKEN_SUPER:
+    case TOKEN_THIS:
+    case TOKEN_TRUE:
+    case TOKEN_VAR:
+    case TOKEN_WHILE:
+        free((void *)token->lexeme);
+        break;
+
+    default:
+        break;
     }
 }
 
@@ -75,6 +98,23 @@ const char *tokentype_to_str(TokenType type) {
     case TOKEN_STRING:     return "STRING";
     case TOKEN_NUMBER:     return "NUMBER";
     case TOKEN_IDENTIFIER: return "IDENTIFIER";
+
+    case TOKEN_AND:        return "AND";
+    case TOKEN_CLASS:      return "CLASS";
+    case TOKEN_ELSE:       return "ELSE";
+    case TOKEN_FALSE:      return "FALSE";
+    case TOKEN_FOR:        return "FOR";
+    case TOKEN_FUN:        return "FUN";
+    case TOKEN_IF:         return "IF";
+    case TOKEN_NIL:        return "NIL";
+    case TOKEN_OR:         return "OR";
+    case TOKEN_PRINT:      return "PRINT";
+    case TOKEN_RETURN:     return "RETURN";
+    case TOKEN_SUPER:      return "SUPER";
+    case TOKEN_THIS:       return "THIS";
+    case TOKEN_TRUE:       return "TRUE";
+    case TOKEN_VAR:        return "VAR";
+    case TOKEN_WHILE:      return "WHILE";
     }
 }
 

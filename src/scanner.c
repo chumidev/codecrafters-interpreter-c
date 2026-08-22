@@ -17,6 +17,27 @@ static char *get_substring(const char *start, size_t length) {
     return substring;
 }
 
+// Checks if contents are equal to rest, and increments count by the length of the rest string.
+// If contents != rest, increments count until it finds a non alpha or nondigit char (except '_').
+// *out will be TOKEN_IDENTIFIER or type if contents == rest.
+static ErrorCodes checkKeyword(const char *contents, int *count, const char *rest, TokenType type, TokenType *out) {
+    if (!contents || !count || !rest || !out) return ERROR_INVALID_INPUT;
+
+    int len = strlen(rest);
+    // 2nd and 3rd conditions are to check it isn't part of a longer variable name
+    if (memcmp(contents, rest, len) == 0 && !isalnum(contents[len]) && contents[len] != '_') {
+        *count += len;
+        *out = type;
+        return SUCCESS;
+    }
+    while (isalnum(*contents) || *contents == '_') {
+        (*count)++;
+        contents++;
+    }
+    *out = TOKEN_IDENTIFIER;
+    return SUCCESS;
+}
+
 ErrorCodes scan_contents(char *contents, TokenArray *out) {
     if (!contents || !out) return ERROR_INVALID_INPUT;
 
@@ -190,15 +211,62 @@ ErrorCodes scan_contents(char *contents, TokenArray *out) {
             if (isalpha(c) || c == '_') {
                 char *start = contents - 1;
                 int len = 1;
+                TokenType type = TOKEN_IDENTIFIER;
 
-                while (isalpha(*contents) || isdigit(*contents) || *contents == '_') {
-                    len++;
-                    contents++;
+                switch (c) {
+                case 'a': checkKeyword(contents, &len, "nd", TOKEN_AND, &type); break;
+                case 'c': checkKeyword(contents, &len, "lass", TOKEN_CLASS, &type); break;
+                case 'e': checkKeyword(contents, &len, "lse", TOKEN_ELSE, &type); break;
+                case 'f':
+                    switch (*contents) {
+                    case 'a':
+                        len++;
+                        contents++;
+                        checkKeyword(contents, &len, "lse", TOKEN_FALSE, &type);
+                        break;
+                    case 'o':
+                        len++;
+                        contents++;
+                        checkKeyword(contents, &len, "r", TOKEN_FOR, &type);
+                        break;
+                    case 'u':
+                        len++;
+                        contents++;
+                        checkKeyword(contents, &len, "n", TOKEN_FUN, &type);
+                        break;
+                    default: checkKeyword(contents, &len, "", TOKEN_IDENTIFIER, &type); break;
+                    }
+                    break;
+                case 'i': checkKeyword(contents, &len, "f", TOKEN_IF, &type); break;
+                case 'n': checkKeyword(contents, &len, "il", TOKEN_NIL, &type); break;
+                case 'o': checkKeyword(contents, &len, "r", TOKEN_OR, &type); break;
+                case 'p': checkKeyword(contents, &len, "rint", TOKEN_PRINT, &type); break;
+                case 'r': checkKeyword(contents, &len, "eturn", TOKEN_RETURN, &type); break;
+                case 's': checkKeyword(contents, &len, "uper", TOKEN_SUPER, &type); break;
+                case 't':
+                    switch (*contents) {
+                    case 'h':
+                        len++;
+                        contents++;
+                        checkKeyword(contents, &len, "is", TOKEN_THIS, &type);
+                        break;
+                    case 'r':
+                        len++;
+                        contents++;
+                        checkKeyword(contents, &len, "ue", TOKEN_TRUE, &type);
+                        break;
+                    default: checkKeyword(contents, &len, "", TOKEN_IDENTIFIER, &type); break;
+                    }
+                    break;
+                case 'v': checkKeyword(contents, &len, "ar", TOKEN_VAR, &type); break;
+                case 'w': checkKeyword(contents, &len, "hile", TOKEN_WHILE, &type); break;
+                default:  checkKeyword(contents, &len, "", TOKEN_IDENTIFIER, &type); break;
                 }
-                char *lexeme = get_substring(start, len);
-                add_token(out, (Token){TOKEN_IDENTIFIER, lexeme, .literal = NULL, .line = line});
-            } else {
 
+                contents += len - 1;
+                char *lexeme = get_substring(start, len);
+                add_token(out, (Token){type, lexeme, .literal = NULL, .line = line});
+            } else {
                 fprintf(stderr, "[line %d] Error: Unexpected character: %c\n", line, c);
                 return_code = ERROR_LEXICAL;
             }
