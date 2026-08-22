@@ -8,7 +8,7 @@
 void free_token(Token *token) {
     if (!token) return;
 
-    if (token->type == TOKEN_NUMBER) {
+    if (token->type == TOKEN_NUMBER || token->type == TOKEN_IDENTIFIER) {
         free((void *)token->lexeme);
     } else if (token->type == TOKEN_STRING) {
         free((void *)token->lexeme);
@@ -71,9 +71,10 @@ const char *tokentype_to_str(TokenType type) {
     case TOKEN_GREATER_EQUAL:
         return "GREATER_EQUAL";
 
-    case TOKEN_SLASH:  return "SLASH";
-    case TOKEN_STRING: return "STRING";
-    case TOKEN_NUMBER: return "NUMBER";
+    case TOKEN_SLASH:      return "SLASH";
+    case TOKEN_STRING:     return "STRING";
+    case TOKEN_NUMBER:     return "NUMBER";
+    case TOKEN_IDENTIFIER: return "IDENTIFIER";
     }
 }
 

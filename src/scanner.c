@@ -186,10 +186,24 @@ ErrorCodes scan_contents(char *contents, TokenArray *out) {
             break;
         }
 
-        default:
-            fprintf(stderr, "[line %d] Error: Unexpected character: %c\n", line, c);
-            return_code = ERROR_LEXICAL;
+        default: {
+            if (isalpha(c) || c == '_') {
+                char *start = contents - 1;
+                int len = 1;
+
+                while (isalpha(*contents) || isdigit(*contents) || *contents == '_') {
+                    len++;
+                    contents++;
+                }
+                char *lexeme = get_substring(start, len);
+                add_token(out, (Token){TOKEN_IDENTIFIER, lexeme, .literal = NULL, .line = line});
+            } else {
+
+                fprintf(stderr, "[line %d] Error: Unexpected character: %c\n", line, c);
+                return_code = ERROR_LEXICAL;
+            }
             break;
+        }
         }
     }
     add_token(out, (Token){TOKEN_EOF, "", .literal = NULL, .line = line});

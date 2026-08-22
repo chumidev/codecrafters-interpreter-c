@@ -31,6 +31,7 @@ typedef enum {
 
     TOKEN_STRING,
     TOKEN_NUMBER,
+    TOKEN_IDENTIFIER,
 } TokenType;
 
 typedef struct {
