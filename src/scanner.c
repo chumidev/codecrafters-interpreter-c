@@ -25,7 +25,7 @@ static ErrorCodes checkKeyword(const char *contents, int *count, const char *res
 
     int len = strlen(rest);
     // 2nd and 3rd conditions are to check it isn't part of a longer variable name
-    if (memcmp(contents, rest, len) == 0 && !isalnum(contents[len]) && contents[len] != '_') {
+    if (len > 0 && memcmp(contents, rest, len) == 0 && !isalnum(contents[len]) && contents[len] != '_') {
         *count += len;
         *out = type;
         return SUCCESS;
@@ -41,99 +41,117 @@ static ErrorCodes checkKeyword(const char *contents, int *count, const char *res
 ErrorCodes scan_contents(char *contents, TokenArray *out) {
     if (!contents || !out) return ERROR_INVALID_INPUT;
 
-    char c;
+    // TODO: Delete char c variable and evalute everything with *contents. Don't post increment in the while or switchs conditions
     int line = 1;
     ErrorCodes return_code = SUCCESS;
-    while ((c = *contents++) != '\0') {
-        switch (c) {
+    while (*contents != '\0') {
+        switch (*contents) {
 
         case ' ':
         case '\t':
         case '\r':
+            contents++;
             break;
 
         case '\n':
             line++;
+            contents++;
             break;
 
         case '(':
             add_token(out, (Token){TOKEN_LEFT_PAREN, "(", .literal = NULL, .line = line});
+            contents++;
             break;
 
         case ')':
             add_token(out, (Token){TOKEN_RIGHT_PAREN, ")", .literal = NULL, .line = line});
+            contents++;
             break;
 
         case '{':
             add_token(out, (Token){TOKEN_LEFT_BRACE, "{", .literal = NULL, .line = line});
+            contents++;
             break;
 
         case '}':
             add_token(out, (Token){TOKEN_RIGHT_BRACE, "}", .literal = NULL, .line = line});
+            contents++;
             break;
 
         case ',':
             add_token(out, (Token){TOKEN_COMMA, ",", .literal = NULL, .line = line});
+            contents++;
             break;
 
         case '.':
             add_token(out, (Token){TOKEN_DOT, ".", .literal = NULL, .line = line});
+            contents++;
             break;
 
         case '-':
             add_token(out, (Token){TOKEN_MINUS, "-", .literal = NULL, .line = line});
+            contents++;
             break;
 
         case '+':
             add_token(out, (Token){TOKEN_PLUS, "+", .literal = NULL, .line = line});
+            contents++;
             break;
 
         case ';':
             add_token(out, (Token){TOKEN_SEMICOLON, ";", .literal = NULL, .line = line});
+            contents++;
             break;
 
         case '*':
             add_token(out, (Token){TOKEN_STAR, "*", .literal = NULL, .line = line});
+            contents++;
             break;
 
         case '=':
-            if (*contents == '=') {
+            if (contents[1] == '=') {
                 add_token(out, (Token){TOKEN_EQUAL_EQUAL, "==", .literal = NULL, .line = line});
                 contents++;
             } else add_token(out, (Token){TOKEN_EQUAL, "=", .literal = NULL, .line = line});
+            contents++;
             break;
 
         case '!':
-            if (*contents == '=') {
+            if (contents[1] == '=') {
                 add_token(out, (Token){TOKEN_BANG_EQUAL, "!=", .literal = NULL, .line = line});
                 contents++;
             } else add_token(out, (Token){TOKEN_BANG, "!", .literal = NULL, .line = line});
+            contents++;
             break;
 
         case '<':
-            if (*contents == '=') {
+            if (contents[1] == '=') {
                 add_token(out, (Token){TOKEN_LESS_EQUAL, "<=", .literal = NULL, .line = line});
                 contents++;
             } else add_token(out, (Token){TOKEN_LESS, "<", .literal = NULL, .line = line});
+            contents++;
             break;
 
         case '>':
-            if (*contents == '=') {
+            if (contents[1] == '=') {
                 add_token(out, (Token){TOKEN_GREATER_EQUAL, ">=", .literal = NULL, .line = line});
                 contents++;
             } else add_token(out, (Token){TOKEN_GREATER, ">", .literal = NULL, .line = line});
+            contents++;
             break;
 
         case '/':
-            if (*contents == '/') {
-                contents++;
+            if (contents[1] == '/') {
                 while (*contents != '\n' && *contents != '\0') contents++;
-
-            } else add_token(out, (Token){TOKEN_SLASH, "/", .literal = NULL, .line = line});
+            } else {
+                add_token(out, (Token){TOKEN_SLASH, "/", .literal = NULL, .line = line});
+                contents++;
+            }
             break;
 
         case '"': {
-            char *start = contents - 1; // reset to starting '"' char
+            char *start = contents;
+            contents++;
             int len = 1;
 
             while (*contents != '"' && *contents != '\0') {
@@ -168,8 +186,8 @@ ErrorCodes scan_contents(char *contents, TokenArray *out) {
         case '7':
         case '8':
         case '9': {
-            char *start = contents - 1;
-            int len = 1;
+            char *start = contents;
+            int len = 0;
 
             // TODO: Add checks for number length. Big string numbers cannot be converted into real number without using big floats
 
@@ -208,67 +226,48 @@ ErrorCodes scan_contents(char *contents, TokenArray *out) {
         }
 
         default: {
-            if (isalpha(c) || c == '_') {
-                char *start = contents - 1;
-                int len = 1;
+            if (isalpha(*contents) || *contents == '_') {
+                char *start = contents;
+                int len = 0;
                 TokenType type = TOKEN_IDENTIFIER;
 
-                switch (c) {
-                case 'a': checkKeyword(contents, &len, "nd", TOKEN_AND, &type); break;
-                case 'c': checkKeyword(contents, &len, "lass", TOKEN_CLASS, &type); break;
-                case 'e': checkKeyword(contents, &len, "lse", TOKEN_ELSE, &type); break;
+                switch (*contents) {
+                case 'a': checkKeyword(contents, &len, "and", TOKEN_AND, &type); break;
+                case 'c': checkKeyword(contents, &len, "class", TOKEN_CLASS, &type); break;
+                case 'e': checkKeyword(contents, &len, "else", TOKEN_ELSE, &type); break;
                 case 'f':
-                    switch (*contents) {
-                    case 'a':
-                        len++;
-                        contents++;
-                        checkKeyword(contents, &len, "lse", TOKEN_FALSE, &type);
-                        break;
-                    case 'o':
-                        len++;
-                        contents++;
-                        checkKeyword(contents, &len, "r", TOKEN_FOR, &type);
-                        break;
-                    case 'u':
-                        len++;
-                        contents++;
-                        checkKeyword(contents, &len, "n", TOKEN_FUN, &type);
-                        break;
-                    default: checkKeyword(contents, &len, "", TOKEN_IDENTIFIER, &type); break;
+                    switch (contents[1]) {
+                    case 'a': checkKeyword(contents, &len, "false", TOKEN_FALSE, &type); break;
+                    case 'o': checkKeyword(contents, &len, "for", TOKEN_FOR, &type); break;
+                    case 'u': checkKeyword(contents, &len, "fun", TOKEN_FUN, &type); break;
+                    default:  checkKeyword(contents, &(len), "", TOKEN_IDENTIFIER, &type); break;
                     }
                     break;
-                case 'i': checkKeyword(contents, &len, "f", TOKEN_IF, &type); break;
-                case 'n': checkKeyword(contents, &len, "il", TOKEN_NIL, &type); break;
-                case 'o': checkKeyword(contents, &len, "r", TOKEN_OR, &type); break;
-                case 'p': checkKeyword(contents, &len, "rint", TOKEN_PRINT, &type); break;
-                case 'r': checkKeyword(contents, &len, "eturn", TOKEN_RETURN, &type); break;
-                case 's': checkKeyword(contents, &len, "uper", TOKEN_SUPER, &type); break;
+                case 'i': checkKeyword(contents, &len, "if", TOKEN_IF, &type); break;
+                case 'n': checkKeyword(contents, &len, "nil", TOKEN_NIL, &type); break;
+                case 'o': checkKeyword(contents, &len, "or", TOKEN_OR, &type); break;
+                case 'p': checkKeyword(contents, &len, "print", TOKEN_PRINT, &type); break;
+                case 'r': checkKeyword(contents, &len, "return", TOKEN_RETURN, &type); break;
+                case 's': checkKeyword(contents, &len, "super", TOKEN_SUPER, &type); break;
                 case 't':
-                    switch (*contents) {
-                    case 'h':
-                        len++;
-                        contents++;
-                        checkKeyword(contents, &len, "is", TOKEN_THIS, &type);
-                        break;
-                    case 'r':
-                        len++;
-                        contents++;
-                        checkKeyword(contents, &len, "ue", TOKEN_TRUE, &type);
-                        break;
-                    default: checkKeyword(contents, &len, "", TOKEN_IDENTIFIER, &type); break;
+                    switch (contents[1]) {
+                    case 'h': checkKeyword(contents, &len, "this", TOKEN_THIS, &type); break;
+                    case 'r': checkKeyword(contents, &len, "true", TOKEN_TRUE, &type); break;
+                    default:  checkKeyword(contents, &(len), "", TOKEN_IDENTIFIER, &type); break;
                     }
                     break;
-                case 'v': checkKeyword(contents, &len, "ar", TOKEN_VAR, &type); break;
-                case 'w': checkKeyword(contents, &len, "hile", TOKEN_WHILE, &type); break;
+                case 'v': checkKeyword(contents, &len, "var", TOKEN_VAR, &type); break;
+                case 'w': checkKeyword(contents, &len, "while", TOKEN_WHILE, &type); break;
                 default:  checkKeyword(contents, &len, "", TOKEN_IDENTIFIER, &type); break;
                 }
 
-                contents += len - 1;
+                contents = start + len;
                 char *lexeme = get_substring(start, len);
                 add_token(out, (Token){type, lexeme, .literal = NULL, .line = line});
             } else {
-                fprintf(stderr, "[line %d] Error: Unexpected character: %c\n", line, c);
+                fprintf(stderr, "[line %d] Error: Unexpected character: %c\n", line, *contents);
                 return_code = ERROR_LEXICAL;
+                contents++;
             }
             break;
         }
